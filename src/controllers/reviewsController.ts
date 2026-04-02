@@ -5,37 +5,37 @@ interface ReviewParams {
 }
 
 // Review interface and dummy data
-interface Review {
+export interface Review {
   id: number;
   title: string;
   content: string;
-  rating: number;
+  rating: number; // 1-5
 }
 
-let reviews: Review[] = [
+// Dummy reviews array
+export let reviews: Review[] = [
   { id: 1, title: "Awesome food", content: "Loved the tacos!", rating: 5 },
   { id: 2, title: "Good service", content: "Friendly staff.", rating: 4 },
 ];
 
-// GET /reviews
+// fetch all reviews
 export const getAllReviews = (_req: Request, res: Response) => {
-  res.json(reviews);
+  res.status(200).json(reviews);
 };
 
-// GET /reviews/:id
+// fetch single review by ID
 export const getReviewById = (req: Request<ReviewParams>, res: Response) => {
-  const { id } = req.params;
-  const numericId = parseInt(id, 10);
+  const numericId = parseInt(req.params.id, 10);
   if (isNaN(numericId)) return res.status(400).json({ message: "Invalid ID" });
 
   const review = reviews.find(r => r.id === numericId);
   if (!review) return res.status(404).json({ message: "Review not found" });
 
-  res.json(review);
+  res.status(200).json(review);
 };
 
-// POST /reviews
-export const createReview = (req: Request, res: Response) => {
+// create a new review
+export const createReview = (req: Request<{}, {}, Omit<Review, "id">>, res: Response) => {
   const { title, content, rating } = req.body;
   if (!title || !content || rating === undefined) {
     return res.status(400).json({ message: "Missing fields" });
@@ -52,10 +52,9 @@ export const createReview = (req: Request, res: Response) => {
   res.status(201).json(newReview);
 };
 
-// PUT /reviews/:id
-export const updateReview = (req: Request<ReviewParams>, res: Response) => {
-  const { id } = req.params;
-  const numericId = parseInt(id, 10);
+// update existing review
+export const updateReview = (req: Request<ReviewParams, {}, Partial<Omit<Review, "id">>>, res: Response) => {
+  const numericId = parseInt(req.params.id, 10);
   if (isNaN(numericId)) return res.status(400).json({ message: "Invalid ID" });
 
   const reviewIndex = reviews.findIndex(r => r.id === numericId);
@@ -66,18 +65,17 @@ export const updateReview = (req: Request<ReviewParams>, res: Response) => {
   if (content !== undefined) reviews[reviewIndex].content = content;
   if (rating !== undefined) reviews[reviewIndex].rating = Number(rating);
 
-  res.json(reviews[reviewIndex]);
+  res.status(200).json(reviews[reviewIndex]);
 };
 
-// DELETE /reviews/:id
+// delete review by ID
 export const deleteReview = (req: Request<ReviewParams>, res: Response) => {
-  const { id } = req.params;
-  const numericId = parseInt(id, 10);
+  const numericId = parseInt(req.params.id, 10);
   if (isNaN(numericId)) return res.status(400).json({ message: "Invalid ID" });
 
   const reviewIndex = reviews.findIndex(r => r.id === numericId);
   if (reviewIndex === -1) return res.status(404).json({ message: "Review not found" });
 
   const deletedReview = reviews.splice(reviewIndex, 1);
-  res.json(deletedReview[0]);
+  res.status(200).json(deletedReview[0]);
 };
