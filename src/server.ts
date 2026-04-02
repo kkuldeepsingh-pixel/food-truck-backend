@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import cors from "cors";
 import reviewsRoutes from "./routes/reviews";
+import menuRoutes from "./routes/menu";
 
 const app: Application = express();
 const PORT = 5000;
@@ -14,6 +15,8 @@ app.use("/reviews", reviewsRoutes);
 app.get("/", (_req, res) => {
   res.send("Food Truck Backend API is running!");
 });
+
+app.use("/menu", menuRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
