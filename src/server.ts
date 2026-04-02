@@ -1,24 +1,14 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
+import reviewsRouter from "./routes/reviews";
 
 const app = express();
-const PORT = 5000;
-
-// Middleware
-app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(express.json());
 
-// Health route
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    message: "Server running "
-  });
-});
+app.use("/reviews", reviewsRouter);
 
-// Start server
+const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
