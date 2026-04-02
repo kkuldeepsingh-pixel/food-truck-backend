@@ -11,6 +11,9 @@ app.use(express.json());
 
 // Routes
 app.use("/reviews", reviewsRoutes);
+app.get("/", (_req, res) => {
+  res.send("Food Truck Backend API is running!");
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
