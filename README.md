@@ -141,3 +141,17 @@ GET /
 Check if server is running
 Response:
 Food Truck Backend API is running!
+
+## New Feature: Search and Filtering
+
+The API now supports query-based filtering.
+
+### Reviews
+- GET /reviews?rating=5
+- GET /reviews?search=food
+
+### Menu
+- GET /menu?category=tacos
+- GET /menu?minPrice=5&maxPrice=15
+
+This improves usability and allows dynamic data retrieval.
