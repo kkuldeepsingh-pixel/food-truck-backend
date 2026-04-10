@@ -5,9 +5,35 @@ interface MenuParams {
   id: string;
 }
 
-// GET all menu items
-export const getAllMenuItems = (_req: Request, res: Response) => {
-  res.json(menuItems);
+// GET all menu items + filtering
+export const getAllMenuItems = (req: Request, res: Response) => {
+  let filteredMenu = menuItems;
+
+  const { minPrice, maxPrice, name } = req.query;
+
+  // filter by name 
+  if (name) {
+    const keyword = String(name).toLowerCase();
+    filteredMenu = filteredMenu.filter(item =>
+      item.name.toLowerCase().includes(keyword)
+    );
+  }
+
+  // filter by min price
+  if (minPrice) {
+    filteredMenu = filteredMenu.filter(
+      item => item.price >= Number(minPrice)
+    );
+  }
+
+  // filter by max price
+  if (maxPrice) {
+    filteredMenu = filteredMenu.filter(
+      item => item.price <= Number(maxPrice)
+    );
+  }
+
+  res.status(200).json(filteredMenu);
 };
 
 // GET menu item by ID
@@ -40,12 +66,15 @@ export const createMenuItem = (req: Request, res: Response) => {
 export const updateMenuItem = (req: Request<MenuParams>, res: Response) => {
   const id = parseInt(req.params.id, 10);
   const itemIndex = menuItems.findIndex(m => m.id === id);
-  if (itemIndex === -1) return res.status(404).json({ message: "Menu item not found" });
+  if (itemIndex === -1)
+    return res.status(404).json({ message: "Menu item not found" });
 
   const { truckId, name, description, price } = req.body;
+
   if (truckId !== undefined) menuItems[itemIndex].truckId = truckId;
   if (name !== undefined) menuItems[itemIndex].name = name;
-  if (description !== undefined) menuItems[itemIndex].description = description;
+  if (description !== undefined)
+    menuItems[itemIndex].description = description;
   if (price !== undefined) menuItems[itemIndex].price = price;
 
   res.json(menuItems[itemIndex]);
@@ -55,7 +84,8 @@ export const updateMenuItem = (req: Request<MenuParams>, res: Response) => {
 export const deleteMenuItem = (req: Request<MenuParams>, res: Response) => {
   const id = parseInt(req.params.id, 10);
   const itemIndex = menuItems.findIndex(m => m.id === id);
-  if (itemIndex === -1) return res.status(404).json({ message: "Menu item not found" });
+  if (itemIndex === -1)
+    return res.status(404).json({ message: "Menu item not found" });
 
   const deletedItem = menuItems.splice(itemIndex, 1);
   res.json(deletedItem[0]);
