@@ -2,9 +2,17 @@ import express, { Application } from "express";
 import cors from "cors";
 import reviewsRoutes from "./routes/reviews";
 import menuRoutes from "./routes/menu";
+import rateLimit from "express-rate-limit";
 
 const app: Application = express();
 const PORT = 5000;
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests
+  message: "Too many requests, try again later",
+});
+
+app.use(limiter);
 
 // Middleware
 app.use(cors());
