@@ -8,17 +8,19 @@ import jwt from "jsonwebtoken";
 const app: Application = express();
 const PORT = 5000;
 
+// Better rate limiter setup
 const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 2,
-  message: "Too many requests, try again later",
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // allow 10 requests 
+  message: { message: "Too many requests, try again later" },
 });
-
-app.use(limiter);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use("/reviews", limiter);
+app.use("/login", limiter);
 
 // LOGIN ROUTE
 app.post("/login", (req, res) => {
