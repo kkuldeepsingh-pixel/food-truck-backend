@@ -1,3 +1,5 @@
+import swaggerUi from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
 import express, { Application } from "express";
 import cors from "cors";
 import reviewsRoutes from "./routes/reviews";
@@ -8,10 +10,10 @@ import jwt from "jsonwebtoken";
 const app: Application = express();
 const PORT = 5000;
 
-// Better rate limiter setup
+// Rate limiter
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // allow 10 requests 
+  windowMs: 60 * 1000,
+  max: 10,
   message: { message: "Too many requests, try again later" },
 });
 
@@ -19,6 +21,34 @@ const limiter = rateLimit({
 app.use(cors());
 app.use(express.json());
 
+// FIXED SWAGGER OPTIONS
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Food Truck API",
+      version: "1.0.0",
+      description: "API documentation for Food Truck Backend",
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+  },
+  apis: ["./src/routes/*.ts"], 
+};
+
+const swaggerSpec = swaggerJsDoc(options);
+
+// Swagger route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Apply limiter
 app.use("/reviews", limiter);
 app.use("/login", limiter);
 
